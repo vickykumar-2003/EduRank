@@ -2,16 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 
-const {protect} = require("../middlerware/authMiddleware");
+const {protect} = require("../middleware/authMiddleware");
+const { getProfile } = require("../controllers/studentController");
 
 
-router.get("/profile", protect, (req,res) => {
-    res.status(200).json({
-        success: true,
-        message: "Protected Profile Route",
-        user: req.user
-    });
-});
+router.get("/profile", protect, getProfile);
 
 
 module.exports = router;
