@@ -21,7 +21,7 @@ const createQuestion = async (req,res) =>{
 
         res.status(201).json({
             success: true,
-            messsage: "Questtion Created Successfully",
+            message: "Questtion Created Successfully",
             question: newQuestion,
         });
     }
@@ -90,10 +90,36 @@ const updateQuestion = async (req, res) => {
     }
 };
 
+const deleteQuestion = async (req, res) =>{
+    try{
+
+        const question = await Question.findByIdAndDelete(req.params.id);
+
+        if(!question){
+            return res.status(404).json({
+                success: false,
+                message: "Question not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Question deleted successfully"
+        });
+    }
+    catch (error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 
 
 module.exports = {
     createQuestion,
     getQuestionByExam,
     updateQuestion,
+    deleteQuestion
 };
