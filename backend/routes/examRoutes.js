@@ -16,11 +16,11 @@ router.post("/create", protect, authorize("admin"), createExam);
 
 router.get("/all", protect, getAllExams);
 
-// router.put("/update/:id", protect, authorize("admin"), updateExam);
+router.put("/update/:id", protect, authorize("admin"), updateExam);
 
 router.get("/published", protect, getPublishedExams);
 
-// router.delete("/delete/:id", protect, authorize("admin"), deleteExam);
+router.delete("/delete/:id", protect, authorize("admin"), deleteExam);
 
 router.put("/publish/:id", protect, authorize("admin"), publishExam);
 

@@ -7,6 +7,7 @@ const {
     createQuestion,
     getQuestionByExam,
     updateQuestion,
+    getSingleQuestion,
     deleteQuestion
 } = require("../controllers/questionController");
 
@@ -18,6 +19,8 @@ router.get("/exam/:examId", protect, getQuestionByExam);
 router.put("/update/:id", protect, authorize("admin"), updateQuestion);
 
 router.delete("/delete/:id", protect, authorize("admin"), deleteQuestion);
+
+router.get("/:id", protect, getSingleQuestion);
 
 
 
