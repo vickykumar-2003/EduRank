@@ -22,14 +22,13 @@ const startExam = async (req, res) => {
 
         const existingAttempt = await Attempt.findOne({
             student: req.user.id,
-            exam: req.params.examId,
-            status: "started"
+            exam: req.params.examId
         });
 
         if (existingAttempt) {
             return res.status(400).json({
                 success: false,
-                message: "You have already this exam"
+                message: "You have already started this exam"
             });
         }
 
@@ -64,6 +63,22 @@ const submitExam = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: "Attempt not found"
+            });
+        }
+
+
+        if (attempt.student.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized"
+            });
+        }
+
+
+        if (attempt.status === "submitted") {
+            return res.status(400).json({
+                success: false,
+                message: "Exam already submitted"
             });
         }
 
@@ -146,6 +161,19 @@ const getResult = async (req, res) => {
             });
         }
 
+
+        if (
+            attempt.student._id.toString() !== req.user.id &&
+            req.user.role !== "admin"
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized"
+            });
+        }
+
+
+
         res.status(200).json({
             success: true,
             result: attempt
@@ -168,15 +196,20 @@ const getLeaderboard = async (req, res) => {
             status: "submitted"
         })
             .populate("student", "name email")
-            .sort({ score: -1 });
+            .sort({
+                score: -1,
+                percentage: -1
+            });
 
 
-        const rankedLeaderboard = leaderboard.map((attempt, index) => ({
-            rank: index + 1,
-            student: attempt.student,
-            score: attempt.score,
-            percentage: attempt.percentage
-        }));
+        const rankedLeaderboard = leaderboard
+            .filter(attempt => attempt.student)
+            .map((attempt, index) => ({
+                rank: index + 1,
+                student: attempt.student,
+                score: attempt.score,
+                percentage: attempt.percentage
+            }));
 
         res.status(200).json({
             success: true,
@@ -185,7 +218,7 @@ const getLeaderboard = async (req, res) => {
         });
     }
 
-    catch (error){
+    catch (error) {
         res.status(500).json({
             success: false,
             message: error.message
